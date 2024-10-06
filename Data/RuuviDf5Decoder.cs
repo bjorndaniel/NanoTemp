@@ -12,8 +12,8 @@ namespace NanoTemp.Data
                 return null;
             }
             var header = message[0];
-            var format = message[2];
-            var payload = new SpanByte(message, 0, message.Length - 3);// new byte[message.Length - 3];
+            var format = message[2];    
+            var payload = new SpanByte(message, 3, message.Length - 3);// new byte[message.Length - 3];
             //Array.Copy(message, 3, payload, 0, payload.Length);
             if (format != 5)
             {
@@ -28,16 +28,12 @@ namespace NanoTemp.Data
                 Humidity = GetHumidity(payload[2], payload[3]),
                 MacAddress = GetMac(payload),
                 Battery = GetBattery(payload[12], payload[13]),
-                TimeStamp = DateTime.UtcNow
+                TimeStamp = DateTime.UtcNow//TODO: Get internet time
             };
         }
 
-        private static string GetMac(SpanByte payload)
-        {
-            //var mac = new byte[payload.Length - 17];
-            //Array.Copy(payload, 17, mac, 0, mac.Length);
-            return BitConverter.ToString(payload.Slice(0, payload.Length -17).ToArray());
-        }
+        private static string GetMac(SpanByte payload) =>
+            BitConverter.ToString(payload.Slice(0, payload.Length -17).ToArray());
 
         private static double GetTemp(int p1, int p2) => 
             TwosComplement((p1 << 8) + p2) / 200;
