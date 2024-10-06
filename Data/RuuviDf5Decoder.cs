@@ -10,12 +10,11 @@ namespace NanoTemp.Data
             {
                 Console.WriteLine("Invalid message format");
                 return null;
-                //throw new ArgumentException("Message too short");
             }
             var header = message[0];
             var format = message[2];
-            var payload = new byte[message.Length - 3];
-            Array.Copy(message, 3, payload, 0, payload.Length);
+            var payload = new SpanByte(message, 0, message.Length - 3);// new byte[message.Length - 3];
+            //Array.Copy(message, 3, payload, 0, payload.Length);
             if (format != 5)
             {
                 Console.WriteLine($"Wrong message format, expected 5 but was {format}");
@@ -32,17 +31,17 @@ namespace NanoTemp.Data
                 TimeStamp = DateTime.UtcNow
             };
         }
-        private static string GetMac(byte[] payload)
+
+        private static string GetMac(SpanByte payload)
         {
-            var mac = new byte[payload.Length - 17];
-            Array.Copy(payload, 17, mac, 0, mac.Length);
-            return BitConverter.ToString(payload);
+            //var mac = new byte[payload.Length - 17];
+            //Array.Copy(payload, 17, mac, 0, mac.Length);
+            return BitConverter.ToString(payload.Slice(0, payload.Length -17).ToArray());
         }
-        private static double GetTemp(int p1, int p2)
-        {
-            var value = TwosComplement((p1 << 8) + p2) / 200;
-            return value;
-        }
+
+        private static double GetTemp(int p1, int p2) => 
+            TwosComplement((p1 << 8) + p2) / 200;
+
         private static double GetHumidity(int p1, int p2)
         {
             if (p1 == 255 && p2 == 255)
@@ -52,6 +51,7 @@ namespace NanoTemp.Data
             var value = ((double)((p1 & 255) << 8 | p2 & 255)) / 400;
             return value;
         }
+
         private static double TwosComplement(int value)
         {
             if ((value & (1 << (16 - 1))) != 0)
