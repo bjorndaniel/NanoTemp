@@ -10,12 +10,10 @@ namespace NanoTemp.Data
             {
                 Console.WriteLine("Invalid message format");
                 return null;
-                //throw new ArgumentException("Message too short");
             }
             var header = message[0];
-            var format = message[2];
-            var payload = new byte[message.Length - 3];
-            Array.Copy(message, 3, payload, 0, payload.Length);
+            var format = message[2];    
+            var payload = new SpanByte(message, 3, message.Length - 3);
             if (format != 5)
             {
                 Console.WriteLine($"Wrong message format, expected 5 but was {format}");
@@ -29,20 +27,16 @@ namespace NanoTemp.Data
                 Humidity = GetHumidity(payload[2], payload[3]),
                 MacAddress = GetMac(payload),
                 Battery = GetBattery(payload[12], payload[13]),
-                TimeStamp = DateTime.UtcNow
+                TimeStamp = DateTime.UtcNow//TODO: Get internet time
             };
         }
-        private static string GetMac(byte[] payload)
-        {
-            var mac = new byte[payload.Length - 17];
-            Array.Copy(payload, 17, mac, 0, mac.Length);
-            return BitConverter.ToString(payload);
-        }
-        private static double GetTemp(int p1, int p2)
-        {
-            var value = TwosComplement((p1 << 8) + p2) / 200;
-            return value;
-        }
+
+        private static string GetMac(SpanByte payload) =>
+            BitConverter.ToString(payload.Slice(18).ToArray());
+
+        private static double GetTemp(int p1, int p2) => 
+            TwosComplement((p1 << 8) + p2) / 200;
+
         private static double GetHumidity(int p1, int p2)
         {
             if (p1 == 255 && p2 == 255)
@@ -52,6 +46,7 @@ namespace NanoTemp.Data
             var value = ((double)((p1 & 255) << 8 | p2 & 255)) / 400;
             return value;
         }
+
         private static double TwosComplement(int value)
         {
             if ((value & (1 << (16 - 1))) != 0)

@@ -19,5 +19,6 @@ namespace NanoTemp.Data
         public string LatitudeDisplay => $"Lat: {Latitude}";
         public string LongitudeDisplay => $"Long: {Longitude}";
         public string BatteryDisplay => $"Battery: {Battery}V";
+        public string MacDisplay => $"Mac: {MacAddress.Substring(0,10)}";
     }
 }
