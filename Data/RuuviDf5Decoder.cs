@@ -13,8 +13,7 @@ namespace NanoTemp.Data
             }
             var header = message[0];
             var format = message[2];    
-            var payload = new SpanByte(message, 3, message.Length - 3);// new byte[message.Length - 3];
-            //Array.Copy(message, 3, payload, 0, payload.Length);
+            var payload = new SpanByte(message, 3, message.Length - 3);
             if (format != 5)
             {
                 Console.WriteLine($"Wrong message format, expected 5 but was {format}");
@@ -33,7 +32,7 @@ namespace NanoTemp.Data
         }
 
         private static string GetMac(SpanByte payload) =>
-            BitConverter.ToString(payload.Slice(0, payload.Length -17).ToArray());
+            BitConverter.ToString(payload.Slice(18).ToArray());
 
         private static double GetTemp(int p1, int p2) => 
             TwosComplement((p1 << 8) + p2) / 200;

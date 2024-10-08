@@ -2,12 +2,10 @@ using Iot.Device.Ssd13xx;
 using nanoFramework.Device.Bluetooth;
 using nanoFramework.Device.Bluetooth.Advertisement;
 using nanoFramework.Hardware.Esp32;
-//using nanoFramework.Networking;
 using NanoTemp.Data;
 using System;
 using System.Device.I2c;
 using System.Diagnostics;
-//using System.Net.Http;
 using System.Threading;
 
 namespace NanoTemp
@@ -16,9 +14,6 @@ namespace NanoTemp
     {
         private static Ssd1306 _screen;
         private static BluetoothLEAdvertisementWatcher _watcher;
-        //private static string SSID = "";
-        //private static string SSIDPASSWORD = "";
-        //private static readonly HttpClient HttpClient;// = new HttpClient();
 
         public static void Main()
         {
@@ -26,9 +21,7 @@ namespace NanoTemp
             InitializeSSD1306();
             _screen.DrawString(2, 2, "Hello", 2, center: true);
             _screen.Display();
-            //InitializeWiFi();
             InitializeBluetooth();
-            //Thread.Sleep(2000);
             _watcher.Start();
             while (true)
             {
@@ -46,30 +39,9 @@ namespace NanoTemp
                 _screen.Font = new BasicFont();
             }
 
-            //void InitializeWiFi()
-            //{
-            //    var cs = new CancellationTokenSource(1200000);
-            //    var success = WifiNetworkHelper.ConnectDhcp(SSID, SSIDPASSWORD, token: cs.Token);
-            //    if (!success)
-            //    {
-            //        Debug.WriteLine($"Cannot connect to the WiFi, error: {WifiNetworkHelper.Status}");
-            //        if (WifiNetworkHelper.HelperException != null)
-            //        {
-            //            Debug.WriteLine($"ex: {WifiNetworkHelper.HelperException}");
-            //        }
-            //    }
-            //    else
-            //    {
-            //        Debug.WriteLine("Connected successfully");
-            //    }
-            //}
-
             void InitializeBluetooth()
             {
-                _watcher = new()
-                {
-                    ScanningMode = BluetoothLEScanningMode.Active
-                };
+                _watcher = new();
                 _watcher.Received += Watcher_Received;
             }
 
@@ -87,7 +59,7 @@ namespace NanoTemp
                         b[0] = bytes[1];
                         b[1] = bytes[0];
                         var tm = BitConverter.ToString(b);
-                        if (tm == "04-99")
+                        if (tm == "04-99") //https://www.bluetooth.com/wp-content/uploads/Files/Specification/HTML/Assigned_Numbers/out/en/Assigned_Numbers.pdf?v=1728219678943
                         {
                             var message = RuuviDf5Decoder.DecodeMessage(bytes);
                             if (message is not null)
@@ -103,12 +75,6 @@ namespace NanoTemp
                                 Debug.WriteLine($"Battery: {message.BatteryDisplay}");
                                 Debug.WriteLine($"Mac Address: {message.MacAddress}");
                                 Debug.WriteLine($"Time: {message.TimeStamp}");
-                                var requestUri = "https://api.thingspeak.com/channels/1417/field/2/last.txt";
-
-                                //var response = HttpClient.Get(requestUri);
-                                //response.EnsureSuccessStatusCode();
-                                //var responseBody = response.Content.ReadAsString();
-                                //Debug.WriteLine($"Response: {responseBody}");
                                 Thread.Sleep(5000);
                             }
                         }
