@@ -12,8 +12,8 @@ namespace NanoTemp
     public class Program
     {
         private static BluetoothLEAdvertisementWatcher _watcher;
-        const string ssid = "";
-        const string password = "";
+        const string ssid = "SSID";
+        const string password = "PWD";
         private static HttpClient _httpClient;
         private static Measurement _message;
 

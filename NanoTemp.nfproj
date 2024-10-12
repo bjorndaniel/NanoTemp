@@ -37,7 +37,7 @@
       <HintPath>packages\nanoFramework.Runtime.Events.1.11.18\lib\nanoFramework.Runtime.Events.dll</HintPath>
     </Reference>
     <Reference Include="nanoFramework.Runtime.Native">
-      <HintPath>packages\nanoFramework.Runtime.Native.1.7.1\lib\nanoFramework.Runtime.Native.dll</HintPath>
+      <HintPath>packages\nanoFramework.Runtime.Native.1.6.12\lib\nanoFramework.Runtime.Native.dll</HintPath>
     </Reference>
     <Reference Include="nanoFramework.System.Collections">
       <HintPath>packages\nanoFramework.System.Collections.1.5.45\lib\nanoFramework.System.Collections.dll</HintPath>
